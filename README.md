@@ -2,4 +2,4 @@
 
 ## Primeiramente você precisa instalar todas dependências necessárias
 
-<code>s</code>
+<code>m</code>

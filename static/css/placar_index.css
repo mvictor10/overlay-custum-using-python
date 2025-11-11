@@ -1,0 +1,120 @@
+:root {
+    --cor-fundo: #121212;
+    --cor-card: #1e1e1e;
+    --cor-texto: #ffffff;
+    --cor-primaria: #387034; /* Seu verde primário */
+    --cor-secundaria: #f39c12; /* Seu laranja de alerta */
+    --cor-legenda: #5D3FD3; /* Novo: Cor para Legenda */
+    --sombra-leve: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: var(--cor-fundo);
+    color: var(--cor-texto);
+    margin: 0;
+    padding: 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+h1 {
+    color: var(--cor-primaria);
+    margin-bottom: 20px;
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px; /* Aumentado para acomodar 5 cards em telas maiores */
+    display: flex;
+    flex-wrap: wrap; 
+    gap: 20px;
+    justify-content: center;
+}
+
+.card {
+    background-color: var(--cor-card);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: var(--sombra-leve);
+    flex: 1 1 200px; /* Ajustado para acomodar 5 cards por linha em telas maiores */
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+}
+
+.card h2 {
+    margin-top: 0;
+    font-size: 1.5em;
+    color: var(--cor-secundaria);
+}
+
+.card p {
+    font-size: 0.9em;
+    color: #ccc;
+}
+
+.btn {
+    display: block;
+    padding: 10px 15px;
+    margin-top: 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.2s;
+}
+
+.btn-control {
+    background-color: var(--cor-primaria);
+    color: var(--cor-texto);
+}
+
+.btn-control:hover {
+    background-color: #5a9c56;
+}
+
+.btn-view {
+    background-color: var(--cor-secundaria);
+    color: var(--cor-fundo);
+}
+
+.btn-view:hover {
+    background-color: #f7b752;
+}
+        
+.btn-legenda {
+    background-color: var(--cor-legenda); /* Cor distintiva para a legenda */
+    color: var(--cor-texto);
+}
+        
+.btn-legenda:hover {
+    background-color: #8c73e8;
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 768px) {
+    .card {
+        flex-basis: calc(50% - 10px); /* 2 cards por linha */
+    }
+}
+
+@media (max-width: 480px) {
+    .card {
+        flex-basis: 100%; /* Ocupa a largura total em telas pequenas */
+        min-height: auto;
+    }
+    
+    body {
+        padding: 10px;
+    }
+}

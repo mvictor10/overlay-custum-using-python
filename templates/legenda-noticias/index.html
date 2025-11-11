@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <title>Banner Estilo TV</title>
+  <style>
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/legenda_style.css')}}">
+</head>
+<body>
+  <div class="tv-banner" id="tvBanner">
+    <div class="box-hora relogio" id="boxEsquerda">
+      <div class="hora" id="hora">--:--</div>
+      <div class="legenda" id="legenda">AO VIVO</div>
+    </div>
+
+    <div class="box-info">
+      <div class="programa" id="programa">A Voz da Caatinga</div>
+      <div class="descricao" id="descricao">Apresentação: Índia Caatingueira</div>
+    </div>
+  </div>
+
+  <script>
+    const box = document.getElementById("boxEsquerda");
+    const horaEl = document.getElementById("hora");
+    const legendaEl = document.getElementById("legenda");
+    const programaEl = document.getElementById("programa");
+    const descricaoEl = document.getElementById("descricao");
+    const banner = document.getElementById("tvBanner");
+
+    let modoClima = false; // estado local
+    let mostrarBanner = true;
+
+    // Atualiza hora em tempo real
+    function atualizarHora() {
+      const agora = new Date();
+      const formato = agora.toLocaleTimeString("pt-BR", {
+        timeZone: "America/Sao_Paulo",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+      horaEl.textContent = formato;
+    }
+
+    // Ícones de clima
+    function obterIcone(cond) {
+      if (!cond) return "🌡️";
+      const c = cond.toLowerCase();
+      if (c.includes("sol") || c.includes("ensolarado")) return "☀️";
+      if (c.includes("nublado") || c.includes("nuvem")) return "☁️";
+      if (c.includes("chuva") || c.includes("chuvoso")) return "🌧️";
+      if (c.includes("tempestade") || c.includes("trovão")) return "⛈️";
+      if (c.includes("neve")) return "❄️";
+      if (c.includes("vento")) return "🌬️";
+      if (c.includes("neblina") || c.includes("nevoa")) return "🌫️";
+      return "🌡️";
+    }
+
+    // Atualiza conteúdo do banner conforme localStorage
+    function atualizarBanner() {
+      const dados = JSON.parse(localStorage.getItem("bannerTV")) || {};
+      legendaEl.textContent = dados.legenda || "AO VIVO";
+      programaEl.textContent = dados.programa || "A Voz da Caatinga";
+      descricaoEl.textContent = dados.descricao || "Apresentação: Índia Caatingueira";
+
+      // Atualizar visibilidade do banner
+      if (dados.mostrarBanner === false) {
+        banner.classList.add("oculto");
+      } else {
+        banner.classList.remove("oculto");
+      }
+
+      // Verificar se o modo mudou
+      if (dados.modoClima !== modoClima) {
+        modoClima = dados.modoClima;
+
+        if (modoClima) {
+          const temp = dados.temp || "--";
+          const umid = dados.umid || "--";
+          const cond = dados.condicao || "";
+          const icone = obterIcone(cond);
+          box.classList.remove("relogio");
+          box.classList.add("clima");
+          horaEl.innerHTML = `
+            <div class="clima-info">
+              <span class="clima-icone">${icone}</span>${temp}°C
+            </div>
+            <div class="clima-extra">${cond} | 💧${umid}%</div>
+          `;
+        } else {
+          box.classList.remove("clima");
+          box.classList.add("relogio");
+          atualizarHora();
+        }
+      } else if (!modoClima) {
+        atualizarHora();
+      }
+    }
+
+    // Atualiza hora e sincroniza banner
+    setInterval(() => {
+      if (!modoClima) atualizarHora();
+      atualizarBanner();
+    }, 1000);
+
+    atualizarBanner();
+  </script>
+</body>
+</html>

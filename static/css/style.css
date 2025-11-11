@@ -1,0 +1,114 @@
+/* style.css */
+
+:root {
+    /* Definições de Cores e Estilos */
+    --cor-fundo-escuro: #4c3f3a; /* Marrom escuro */
+    --cor-fundo-claro: #387034; /* Verde escuro (Tempo) */
+    --cor-placar: #387034; /* Verde do Placar */
+    --cor-texto-claro: white;
+    --cor-texto-escuro: black;
+    --cor-acrescimo: #ffcc00; /* Amarelo/Ouro para acréscimo */
+    --borda-arredondada: 15px;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial Black', Gadget, sans-serif;
+    background-color: transparent; /* FUNDAMENTAL para a transparência do OBS */
+    color: var(--cor-texto-claro);
+    overflow: hidden; 
+}
+
+/* --- ESTILO DO OVERLAY (placar_overlay.html) --- */
+#placar-container {
+    display: flex;
+    width: 650px; /* Largura ajustável para o tamanho da overlay */
+    height: 100px;
+    margin: 20px; /* Margem da borda da tela */
+    border-radius: var(--borda-arredondada);
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    transition: opacity 0.3s ease-in-out;
+}
+
+.time {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 25%;
+    background-color: var(--cor-fundo-escuro);
+    padding: 10px 0;
+    text-align: center;
+    line-height: 1;
+}
+
+.time-logo {
+    width: 40px;
+    height: 40px;
+    background-color: transparent; 
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    border-radius: 50%;
+    margin-bottom: 5px;
+}
+
+.time-sigla {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.placar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 35%;
+    background-color: var(--cor-texto-claro);
+    font-size: 3.5em;
+    font-weight: 900;
+}
+
+.score {
+    color: var(--cor-placar);
+    padding: 0 10px;
+}
+
+.separador {
+    color: var(--cor-texto-escuro);
+    padding: 0 10px;
+}
+
+/* BOX DO TEMPO: Centralizado e Proporcional */
+.tempo {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 15%;
+    background-color: var(--cor-fundo-claro);
+    line-height: 1.1; /* Melhora a proporção vertical */
+    padding: 5px 0;
+    text-align: center;
+}
+
+.tempo-minutos {
+    font-size: 1.8em; /* Aumentado para dar mais destaque ao MM:SS */
+    font-weight: 900;
+    margin-bottom: 2px;
+}
+
+.tempo-periodo {
+    font-size: 0.6em; /* Aumentado para melhor legibilidade */
+    font-weight: bold;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+#acrescimo-display {
+    font-size: 0.8em;
+    color: var(--cor-acrescimo); 
+    font-weight: bold;
+}
+
+/* O CSS do painel de controle (controle_style.css) não está incluído aqui, conforme a separação solicitada. */

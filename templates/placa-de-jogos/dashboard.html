@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Controle do Placar e Cronômetro (Final)</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/painel.css')}}"> 
+</head>
+<body>
+
+    <h3>Controle de Partida (OBS)</h3>
+
+    <div class="campo-controle">
+        <h4>Detalhes (Nomes & Logos)</h4>
+        <label for="time1-sigla">Time 1 Sigla:</label>
+        <input type="text" id="time1-sigla" value="PSG" maxlength="5" onchange="salvarDados()">
+        <label for="time1-logo">Time 1 Logo (PNG URL):</label>
+        <input type="text" id="time1-logo" value="logo_psg.png" onchange="salvarDados()">
+        
+        <hr>
+        
+        <label for="time2-sigla">Time 2 Sigla:</label>
+        <input type="text" id="time2-sigla" value="COR" maxlength="5" onchange="salvarDados()">
+        <label for="time2-logo">Time 2 Logo (PNG URL):</label>
+        <input type="text" id="time2-logo" value="logo_cor.png" onchange="salvarDados()">
+    </div>
+
+    <div class="campo-controle">
+        <h4>Placar (Pontuação Rápida)</h4>
+        <div class="controle-placar">
+            <div class="controle-time">
+                Time 1: <span id="score-display-t1">0</span>
+                <button onclick="mudarPlacar(1, 1)">+ Gol</button>
+                <button onclick="mudarPlacar(1, -1)">- Erro</button>
+            </div>
+            <div class="controle-time">
+                Time 2: <span id="score-display-t2">0</span>
+                <button onclick="mudarPlacar(2, 1)">+ Gol</button>
+                <button onclick="mudarPlacar(2, -1)">- Erro</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="campo-controle">
+        <h4>Cronômetro</h4>
+        <label for="tempo-periodo">Período:</label>
+        <select id="tempo-periodo" onchange="salvarDados()">
+            <option value="1ºT">1ºT</option>
+            <option value="2ºT" selected>2ºT</option>
+            <option value="INT">Intervalo</option>
+            <option value="Pror.">Prorrogação</option>
+            <option value="FIM">Fim de Jogo</option>
+        </select>
+        
+        <label for="tempo-inicial-min">Tempo Limite (Minutos):</label>
+        <input type="number" id="tempo-inicial-min" value="45" min="1" max="90">
+        
+        <label for="acrescimo-minutos">Acréscimos (Minutos):</label>
+        <input type="number" id="acrescimo-minutos" value="0" min="0" onchange="salvarDados()">
+
+        <div class="botoes-acao">
+            <button class="btn-start-pause" id="btn-start-pause" onclick="toggleCronometro()">Iniciar</button>
+            <button class="btn-reset" onclick="resetarCronometro()">Resetar Tempo</button>
+        </div>
+        <p class="tempo-info">Tempo Atual: <span id="tempo-display">00:00</span></p>
+
+    </div>
+    
+    <div class="campo-controle">
+        <h4>Controle Geral</h4>
+        <div class="botoes-acao">
+            <button class="btn-toggle" id="btn-toggle-visibilidade" onclick="toggleVisibilidade()">Ocultar Placar</button>
+            <button class="btn-reset" onclick="resetarDados()">Resetar TUDO</button>
+        </div>
+    </div>
+
+
+    <script>
+        // ESTADO GLOBAL DO PLACAR
+        let placarData = {
+            time1: { sigla: 'PSG', score: 0, logo: 'logo_psg.png' },
+            time2: { sigla: 'COR', score: 0, logo: 'logo_cor.png' },
+            tempoSegundos: 0, // Inicia em 00:00 (0 segundos)
+            tempoLimiteSegundos: 45 * 60, // Limite para acréscimo
+            periodo: '2ºT',
+            acrescimo: 0,
+            visivel: true,
+            rodando: false,
+            interval: null 
+        };
+
+        const defaultData = JSON.parse(JSON.stringify(placarData)); 
+        defaultData.time1.score = 1; // Ajuste default para visualização inicial
+        defaultData.time2.score = 1; 
+
+
+        // FUNÇÃO DE UTILIDADE (FORMATO MM:SS)
+        function formatarTempo(totalSegundos) {
+            const minutos = Math.floor(totalSegundos / 60);
+            const segundos = totalSegundos % 60;
+            return `${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`;
+        }
+
+
+        
+        // ATUALIZA O DISPLAY NO PRÓPRIO PAINEL
+        function atualizarTempoDisplay() {
+            document.getElementById('tempo-display').textContent = formatarTempo(placarData.tempoSegundos);
+        }
+        
+        // FUNÇÃO PRINCIPAL: COLETA DADOS E SALVA NO LOCAL STORAGE
+        function salvarDados() {
+            // Atualiza o tempo limite com base no input (Em Minutos -> Segundos)
+            const tempoMinInput = parseInt(document.getElementById('tempo-inicial-min').value);
+            placarData.tempoLimiteSegundos = tempoMinInput * 60;
+            
+            placarData.time1.sigla = document.getElementById('time1-sigla').value.toUpperCase();
+            placarData.time1.logo = document.getElementById('time1-logo').value;
+            placarData.time2.sigla = document.getElementById('time2-sigla').value.toUpperCase();
+            placarData.time2.logo = document.getElementById('time2-logo').value;
+            placarData.periodo = document.getElementById('tempo-periodo').value;
+            placarData.acrescimo = parseInt(document.getElementById('acrescimo-minutos').value) || 0;
+            
+            placarData.time1.score = parseInt(document.getElementById('score-display-t1').textContent);
+            placarData.time2.score = parseInt(document.getElementById('score-display-t2').textContent);
+
+            // Armazena no localStorage (Notifica o overlay)
+            localStorage.setItem('placarData', JSON.stringify(placarData));
+            atualizarTempoDisplay(); 
+        }
+
+        // --- LÓGICA DO CRONÔMETRO ---
+        
+        function iniciarCronometro() {
+            if (placarData.rodando) return;
+            placarData.rodando = true;
+            document.getElementById('btn-start-pause').textContent = 'Pausar';
+            document.getElementById('btn-start-pause').style.backgroundColor = '#e67e22'; 
+            
+            // Intervalo de 1 segundo para avançar o tempo
+            placarData.interval = setInterval(() => { 
+                placarData.tempoSegundos++; 
+                
+                // Limite total com acréscimo
+                const tempoTotalMaximo = placarData.tempoLimiteSegundos + (placarData.acrescimo * 60);
+
+                if (placarData.tempoSegundos > tempoTotalMaximo) {
+                    pausarCronometro();
+                    // Garante que o período seja FIM
+                    if (document.getElementById('tempo-periodo').value !== 'FIM') {
+                        document.getElementById('tempo-periodo').value = 'FIM';
+                    }
+                }
+
+                salvarDados(); // Salva a cada segundo
+            }, 1000);
+        }
+
+        function pausarCronometro() {
+            if (!placarData.rodando) return;
+            placarData.rodando = false;
+            clearInterval(placarData.interval);
+            document.getElementById('btn-start-pause').textContent = 'Continuar';
+            document.getElementById('btn-start-pause').style.backgroundColor = '#387034'; 
+            salvarDados(); 
+        }
+        
+        function toggleCronometro() {
+            if (placarData.rodando) {
+                pausarCronometro();
+            } else {
+                iniciarCronometro();
+            }
+        }
+
+        function resetarCronometro() {
+            pausarCronometro();
+            // Reseta o contador para 0 e o acréscimo
+            placarData.tempoSegundos = 0; 
+            placarData.acrescimento = 0;
+            document.getElementById('acrescimo-minutos').value = 0;
+            salvarDados();
+            alert(`Tempo resetado. Início: 00:00. Limite: ${placarData.tempoLimiteSegundos / 60} minutos.`);
+        }
+        
+        // --- FUNÇÕES DE CARREGAMENTO E CONTROLE ---
+        
+        function carregarDados() {
+            try {
+                const storedData = localStorage.getItem('placarData');
+                if (storedData) {
+                    const loadedData = JSON.parse(storedData);
+                    delete loadedData.interval;
+                    Object.assign(placarData, loadedData); 
+                }
+            } catch (e) {
+                console.warn("Nenhum dado salvo encontrado ou erro ao carregar.");
+            }
+
+            // Popula os inputs do formulário
+            document.getElementById('time1-sigla').value = placarData.time1.sigla;
+            document.getElementById('time1-logo').value = placarData.time1.logo;
+            document.getElementById('time2-sigla').value = placarData.time2.sigla;
+            document.getElementById('time2-logo').value = placarData.time2.logo;
+            document.getElementById('tempo-periodo').value = placarData.periodo;
+            document.getElementById('acrescimo-minutos').value = placarData.acrescimo;
+
+            // Popula inputs específicos e displays
+            document.getElementById('score-display-t1').textContent = placarData.time1.score;
+            document.getElementById('score-display-t2').textContent = placarData.time2.score;
+            document.getElementById('tempo-inicial-min').value = placarData.tempoLimiteSegundos / 60; 
+
+            // Reinicia o cronômetro se estava rodando ao carregar
+            if (placarData.rodando) {
+                iniciarCronometro(); 
+            } else {
+                pausarCronometro(); 
+            }
+
+            toggleVisibilidade(placarData.visivel);
+            atualizarTempoDisplay();
+        }
+
+
+        function mudarPlacar(time, delta) {
+            if (time === 1) {
+                placarData.time1.score = Math.max(0, placarData.time1.score + delta);
+                document.getElementById('score-display-t1').textContent = placarData.time1.score;
+            } else if (time === 2) {
+                placarData.time2.score = Math.max(0, placarData.time2.score + delta);
+                document.getElementById('score-display-t2').textContent = placarData.time2.score;
+            }
+            salvarDados(); 
+        }
+
+        function toggleVisibilidade(forceVisibility = null) {
+            if (forceVisibility !== null) {
+                placarData.visivel = forceVisibility;
+            } else {
+                placarData.visivel = !placarData.visivel;
+            }
+            const btn = document.getElementById('btn-toggle-visibilidade');
+            btn.textContent = placarData.visivel ? 'Ocultar Placar' : 'Exibir Placar';
+            btn.style.backgroundColor = placarData.visivel ? '#f39c12' : '#2ecc71';
+            salvarDados();
+        }
+        
+        function resetarDados() {
+            if (confirm("ATENÇÃO: Deseja resetar TUDO (placar, tempo, nomes, etc.) para os valores iniciais?")) {
+                pausarCronometro(); 
+                placarData = JSON.parse(JSON.stringify(defaultData));
+                localStorage.setItem('placarData', JSON.stringify(placarData));
+                carregarDados();
+            }
+        }
+
+
+        window.onload = carregarDados;
+    </script>
+</body>
+</html>

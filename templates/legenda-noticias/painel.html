@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <title>Painel de Controle - Banner TV</title>
+  <style>
+    body { font-family: "Poppins", Arial, sans-serif; background: #f4f4f4; margin: 0; padding: 30px; color: #222; }
+    h1 { text-align: center; color: #333; }
+    label { display: block; margin-top: 15px; font-weight: 600; }
+    input, select { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 6px; font-size: 1em; }
+    button { margin-top: 20px; padding: 10px 20px; background: #0072ff; color: #fff; border: none; border-radius: 6px; font-size: 1em; cursor: pointer; transition: 0.3s; }
+    button:hover { background: #005ae0; }
+    .container { max-width: 420px; margin: 0 auto; background: #fff; padding: 25px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    .toggle { margin-top: 15px; background: #004080; }
+    .toggle.ativo { background: #0099ff; }
+    .clima-dados { display: none; margin-top: 15px; padding: 10px; background: #eef5ff; border-radius: 6px; transition: all 0.3s ease; }
+    .clima-dados.show { display: block; }
+  </style>
+</head>
+<body>
+  <h1>🎬 Painel do Banner TV</h1>
+  <div class="container">
+    <label>Legenda:</label>
+    <select id="legenda">
+      <option>AO VIVO</option>
+      <option>REPRISE</option>
+      <option>ENCERRADO</option>
+      <option>ENTREVISTA</option>
+      <option>ESPECIAL</option>
+    </select>
+
+    <label>Nome do Programa:</label>
+    <input id="programa" type="text" placeholder="Nome do programa">
+
+    <label>Descrição / Apresentador:</label>
+    <input id="descricao" type="text" placeholder="Apresentação: ...">
+
+    <div class="clima-dados" id="climaCampos">
+      <h4>🌦️ Dados do Clima</h4>
+      <label>Temperatura (°C):</label>
+      <input id="temp" type="number" placeholder="Ex: 27">
+      <label>Umidade (%):</label>
+      <input id="umid" type="number" placeholder="Ex: 65">
+      <label>Condição:</label>
+      <select id="condicao">
+        <option value="ensolarado">☀️ Ensolarado</option>
+        <option value="parcialmente_nublado">⛅ Parcialmente Nublado</option>
+        <option value="nublado">☁️ Nublado</option>
+        <option value="chuva_leve">🌦️ Chuva leve</option>
+        <option value="chuva_forte">🌧️ Chuva forte</option>
+        <option value="tempestade">⛈️ Tempestade</option>
+        <option value="neve">❄️ Neve</option>
+        <option value="neblina">🌫️ Neblina</option>
+        <option value="vento">🌬️ Ventoso</option>
+      </select>
+    </div>
+
+    <button id="salvar">💾 Salvar Alterações</button>
+    <button id="toggleClima" class="toggle">🌀 Mostrar Clima</button>
+    <button id="btnToggleBanner" class="toggle">🎛️ Mostrar/Ocultar Banner</button>
+  </div>
+
+  <script>
+    const legendaEl = document.getElementById("legenda");
+    const programaEl = document.getElementById("programa");
+    const descricaoEl = document.getElementById("descricao");
+    const toggleBtn = document.getElementById("toggleClima");
+    const climaCampos = document.getElementById("climaCampos");
+    const tempEl = document.getElementById("temp");
+    const umidEl = document.getElementById("umid");
+    const condEl = document.getElementById("condicao");
+    const toggleBannerBtn = document.getElementById("btnToggleBanner");
+
+    // 🔹 Função para carregar os dados do localStorage
+    function carregar() {
+      const dados = JSON.parse(localStorage.getItem("bannerTV")) || {};
+      legendaEl.value = dados.legenda || "AO VIVO";
+      programaEl.value = dados.programa || "";
+      descricaoEl.value = dados.descricao || "";
+      tempEl.value = dados.temp || "";
+      umidEl.value = dados.umid || "";
+      condEl.value = dados.condicao || "ensolarado";
+
+      // Atualiza interface com base no modo atual
+      atualizarInterface(dados);
+    }
+
+    // 🔹 Atualiza os botões e a exibição do painel do clima
+    function atualizarInterface(dados) {
+      const modoClima = dados.modoClima || false;
+
+      if (modoClima) {
+        toggleBtn.classList.add("ativo");
+        climaCampos.classList.add("show");
+        toggleBtn.textContent = "☀️ Mostrar Hora";
+      } else {
+        toggleBtn.classList.remove("ativo");
+        climaCampos.classList.remove("show");
+        toggleBtn.textContent = "🌀 Mostrar Clima";
+      }
+    }
+
+    // 🔹 Salvar alterações
+    document.getElementById("salvar").addEventListener("click", () => {
+      const dados = JSON.parse(localStorage.getItem("bannerTV")) || {};
+      dados.legenda = legendaEl.value;
+      dados.programa = programaEl.value;
+      dados.descricao = descricaoEl.value;
+      dados.temp = tempEl.value;
+      dados.umid = umidEl.value;
+      dados.condicao = condEl.value;
+      localStorage.setItem("bannerTV", JSON.stringify(dados));
+      alert("✅ Informações atualizadas!");
+    });
+
+    // 🔹 Alternar entre Hora e Clima
+    toggleBtn.addEventListener("click", () => {
+      const dados = JSON.parse(localStorage.getItem("bannerTV")) || {};
+      dados.modoClima = !dados.modoClima;
+      localStorage.setItem("bannerTV", JSON.stringify(dados));
+      atualizarInterface(dados);
+    });
+
+    // 🔹 Mostrar / Ocultar Banner
+    toggleBannerBtn.addEventListener("click", () => {
+      const dados = JSON.parse(localStorage.getItem("bannerTV")) || {};
+      dados.mostrarBanner = !dados.mostrarBanner;
+      localStorage.setItem("bannerTV", JSON.stringify(dados));
+      toggleBannerBtn.textContent = dados.mostrarBanner ? "🎛️ Ocultar Banner" : "🎛️ Mostrar Banner";
+    });
+
+    carregar();
+  </script>
+</body>
+</html>

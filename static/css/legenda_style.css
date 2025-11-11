@@ -1,0 +1,116 @@
+* { 
+  box-sizing: border-box; 
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  font-family: "Poppins", Arial, sans-serif;
+  color: #000;
+  overflow: hidden;
+}
+
+.tv-banner {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  position: fixed;
+  bottom: 40px;
+  left: 40px;
+  height: 90px;
+  border-radius: 12px;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  transition: all 0.5s ease;
+  animation: slideUp 0.8s ease-out;
+  transform: translateX(0);
+}
+
+.tv-banner.oculto {
+  transform: translateX(-150%);
+  opacity: 0;
+}
+
+.box-hora {
+  width: 170px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 8px;
+  text-align: center;
+  transition: background 0.4s ease, opacity 0.4s ease;
+}
+
+.box-hora.relogio {
+  background: rgba(206, 155, 103, 0.63);
+}
+
+.box-hora.clima {
+  background: rgba(0, 51, 102, 0.75);
+}
+
+.hora, .clima-info {
+  font-size: 1.1em;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  line-height: 1.1;
+  transition: opacity 0.4s ease;
+}
+
+.clima-icone {
+  font-size: 1.1em;
+  vertical-align: middle;
+}
+
+.clima-extra {
+  font-size: 0.75em;
+  color: #dfe9ff;
+  margin-top: 4px;
+  line-height: 1.2;
+}
+
+.legenda {
+  font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+  font-size: 0.8em;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: rgba(215, 0, 0, 0.91);
+  font-weight:bolder;
+}
+
+.box-info {
+  background: rgba(84, 81, 78, 0.63);
+  padding: 10px 25px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 340px;
+  border-left: 2px solid rgba(255, 255, 255, 0.1);
+  animation: fadeIn 0.5s ease forwards;
+}
+
+.programa {
+  font-size: 1.2em;
+  font-weight: 600;
+  color: #000;
+}
+
+.descricao {
+  font-size: 0.9em;
+  color: rgba(29, 26, 26, 0.65);
+}
+
+@keyframes slideUp {
+  from { transform: translateY(120%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
+}

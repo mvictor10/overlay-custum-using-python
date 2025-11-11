@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Placar Overlay OBS</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css')}}"> 
+</head>
+<body>
+
+    <div id="placar-container">
+        <div class="time">
+            <div id="logo-t1" class="time-logo"></div> 
+            <div id="sigla-t1" class="time-sigla"></div>
+        </div>
+
+        <div class="placar">
+            <span id="score-t1" class="score"></span>
+            <span class="separador">X</span>
+            <span id="score-t2" class="score"></span>
+        </div>
+
+        <div class="time">
+            <div id="logo-t2" class="time-logo"></div>
+            <div id="sigla-t2" class="time-sigla"></div>
+        </div>
+
+        <div class="tempo">
+            <span id="tempo-minutos" class="tempo-minutos"></span>
+            <span id="tempo-periodo" class="tempo-periodo"></span>
+            <span id="acrescimo-display"></span>
+        </div>
+    </div>
+
+    <script>
+        // Função para formatar segundos em MM:SS
+        function formatarTempo(totalSegundos) {
+            const minutos = Math.floor(totalSegundos / 60);
+            const segundos = totalSegundos % 60;
+            return `${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`;
+        }
+        
+        function atualizarPlacar() {
+            try {
+                const dados = JSON.parse(localStorage.getItem('placarData'));
+                if (!dados) return;
+
+                // ... (Atualização de Nomes e Placar) ...
+
+                document.getElementById('sigla-t1').textContent = dados.time1.sigla;
+                document.getElementById('score-t1').textContent = dados.time1.score;
+                document.getElementById('logo-t1').style.backgroundImage = `url('${dados.time1.logo}')`;
+
+                document.getElementById('sigla-t2').textContent = dados.time2.sigla;
+                document.getElementById('score-t2').textContent = dados.time2.score;
+                document.getElementById('logo-t2').style.backgroundImage = `url('${dados.time2.logo}')`;
+
+
+                // --- Lógica de Exibição do Tempo (MM:SS) ---
+                const tempoAtualSegundos = dados.tempoSegundos;
+                const tempoLimiteSegundos = dados.tempoLimiteSegundos;
+                const acrescimoMinutos = dados.acrescimo;
+
+                let tempoExibicao;
+                let acrescimoDisplay = '';
+                
+                // 1. Tempo Regulamentar
+                if (tempoAtualSegundos <= tempoLimiteSegundos) {
+                    tempoExibicao = formatarTempo(tempoAtualSegundos);
+                    acrescimoDisplay = ''; // Garante que não há acréscimo visível
+                } 
+                // 2. Acréscimo em Andamento
+                else if (acrescimoMinutos > 0) {
+                    const segundosEmAcrecimo = tempoAtualSegundos - tempoLimiteSegundos;
+                    const segundosMaxAcrecimo = acrescimoMinutos * 60;
+                    
+                    // Se o contador ainda está dentro do tempo máximo de acréscimo
+                    if (segundosEmAcrecimo <= segundosMaxAcrecimo) {
+                        tempoExibicao = formatarTempo(tempoLimiteSegundos); // Tempo trava em 45:00
+                        // Exibe o tempo de acréscimo (Ex: +01:30)
+                        acrescimoDisplay = `+${formatarTempo(segundosEmAcrecimo)}`; 
+                    } else {
+                        // Tempo já ultrapassou o acréscimo, mas o JS não parou no controle (o cronômetro pausa)
+                        tempoExibicao = formatarTempo(tempoLimiteSegundos);
+                        acrescimoDisplay = `+${formatarTempo(segundosMaxAcrecimo)} (FIM)`;
+                    }
+                }
+                // 3. Fim de Jogo sem Acréscimo (ou Período FIM)
+                else {
+                    tempoExibicao = formatarTempo(tempoAtualSegundos); // Exibe o tempo que parou
+                }
+
+                document.getElementById('tempo-minutos').textContent = tempoExibicao;
+                document.getElementById('tempo-periodo').textContent = dados.periodo;
+                document.getElementById('acrescimo-display').textContent = acrescimoDisplay;
+
+                // Visibilidade do Overlay
+                document.getElementById('placar-container').style.opacity = dados.visivel ? '1' : '0';
+
+            } catch (e) {
+                console.error("Erro ao carregar ou processar dados do placar:", e);
+            }
+        }
+        
+        // ... (o restante do JS: formatarTempo, window.addEventListener) ...
+
+        // 1. Atualiza ao carregar
+        atualizarPlacar();
+
+        // 2. Ouve o evento de armazenamento para sincronia em tempo real
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'placarData') {
+                atualizarPlacar();
+            }
+        });
+        
+    </script>
+</body>
+</html>

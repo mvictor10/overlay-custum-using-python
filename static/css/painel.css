@@ -1,0 +1,123 @@
+/* controle_style.css */
+
+:root {
+    /* Cores e Variáveis para consistência no tema escuro do OBS */
+    --cor-fundo-app: #1e1e1e; /* Fundo escuro principal */
+    --cor-secao: #2d2d2d; /* Fundo das seções/campos */
+    --cor-borda: #444; /* Borda sutil */
+    --cor-primaria: #387034; /* Verde (Ações de Iniciar/Atualizar) */
+    --cor-alerta: #f39c12; /* Laranja (Ocultar/Pausar) */
+    --cor-erro: #e74c3c; /* Vermelho (Reset/Erro) */
+    --cor-texto-claro: white;
+    --cor-input-fundo: #4a4a4a;
+}
+
+body {
+    /* Configuração básica para o ambiente de dock do OBS */
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: var(--cor-fundo-app);
+    color: var(--cor-texto-claro);
+    overflow-y: auto; /* Permite rolagem se o painel estiver muito estreito */
+}
+
+h3 {
+    /* Título principal do painel */
+    color: var(--cor-primaria);
+    border-bottom: 2px solid var(--cor-borda);
+    padding-bottom: 5px;
+    margin: 10px 0;
+    font-size: 1.2em;
+}
+
+h4 {
+    /* Títulos de seção */
+    color: var(--cor-texto-claro);
+    font-size: 1em;
+    margin: 5px 0;
+}
+
+/* --- Estilo dos Campos de Controle --- */
+.campo-controle {
+    margin-bottom: 10px;
+    padding: 8px;
+    border: 1px solid var(--cor-borda);
+    border-radius: 4px;
+    background-color: var(--cor-secao);
+}
+
+.campo-controle label {
+    display: block;
+    margin-top: 5px;
+    margin-bottom: 3px;
+    font-size: 0.85em;
+    font-weight: bold;
+}
+
+input[type="text"],
+input[type="number"],
+select {
+    width: 95%; /* Garante que os inputs se ajustem à largura do painel */
+    padding: 6px;
+    border: none;
+    border-radius: 3px;
+    background-color: var(--cor-input-fundo);
+    color: var(--cor-texto-claro);
+    font-size: 0.9em;
+    box-sizing: border-box; /* Inclui padding na largura total */
+}
+
+hr {
+    border: 0;
+    border-top: 1px dashed #555;
+    margin: 8px 0;
+}
+
+/* --- Controle do Placar Compacto --- */
+
+.controle-placar {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 5px; /* Espaço entre os times */
+}
+
+.controle-time {
+    flex: 1; /* Garante que cada time ocupe metade do espaço */
+    text-align: center;
+    border: 1px solid #555;
+    padding: 5px;
+    border-radius: 4px;
+}
+
+.controle-time span {
+    display: block;
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.controle-time button {
+    width: 48%; /* 2 botões por linha para manter o controle compacto */
+    padding: 6px 0;
+    margin: 2px 0;
+    font-size: 0.8em;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    color: var(--cor-texto-claro);
+    background-color: #555;
+    transition: background-color 0.2s;
+    box-sizing: border-box;
+}
+
+.controle-time button:hover {
+    background-color: #777;
+}
+
+/* --- Botões de Ação Geral --- */
+
+.botoes-acao {
+    display: flex;
+    flex-wrap: wrap; /* Permite que os botões quebrem para a linha de baixo se o painel for muito estreito */

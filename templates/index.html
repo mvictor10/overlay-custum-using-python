@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Overlay para OBS STUDIO</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/placar_index.css')}}">
+</head>
+<body>
+
+    <h1>🎮 Gerenciador do Placar OBS Studio</h1>
+    <p>Ponto de acesso central para o Painel de Controle e o Overlay de Exibição.</p>
+
+    <div class="container">
+        
+        <div class="card">
+            <h2>⚙️ Controle do Placar</h2>
+            <p>Altere scores, nomes, períodos e controle o cronômetro principal do jogo.</p>
+            <p><strong>Uso OBS:</strong> Doca Personalizada.</p>
+            <a href="/placar/painel" class="btn btn-control" target="_blank">Abrir Painel de Controle</a>
+        </div>
+        
+        <div class="card">
+            <h2>📺 Placar Principal (Overlay)</h2>
+            <p>A fonte que deve ser adicionada como **Fonte de Navegador** na sua cena do OBS.</p>
+            <p><strong>Uso OBS:</strong> Fonte de Navegador.</p>
+            <a href="/placar/overlay" class="btn btn-view" target="_blank">Abrir Placar (Overlay)</a>
+        </div>
+        
+        <div class="card">
+            <h2>📝 Controle da Legenda</h2>
+            <p>Painel para digitar e alternar a visibilidade de textos e informações extras (Ex: Gols, Artilheiro).</p>
+            <p><strong>Uso OBS:</strong> Doca Personalizada.</p>
+            <a href="/legenda/painel" class="btn btn-legenda" target="_blank">Abrir Painel da Legenda</a>
+        </div>
+        
+        <div class="card">
+            <h2>🏷️ Legenda de Exibição</h2>
+            <p>A fonte da legenda que será posicionada na parte inferior da tela.</p>
+            <p><strong>Uso OBS:</strong> Fonte de Navegador.</p>
+            <a href="/legenda/overlay" class="btn btn-legenda" target="_blank">Abrir Legenda (Overlay)</a>
+        </div>
+        
+        <div class="card">
+            <h2>📁 Arquivos e Configurações</h2>
+            <p>Acesso rápido à pasta raiz do projeto para manutenção de CSS e Logos.</p>
+            <p><strong>Ação:</strong> Acesse a pasta do projeto.</p>
+            <a href="#" class="btn" style="background-color:#555;">Visualizar Estrutura</a>
+        </div>
+        
+    </div>
+    
+    <div style="margin-top: 30px; font-size: 0.8em; color: #777;">
+        Projeto de Placar e Legendas modular, desenvolvido para OBS Studio.
+    </div>
+
+</body>
+</html>
